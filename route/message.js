@@ -1,11 +1,11 @@
 
 const { hasAccess, handleUnauthorized, passport } = require('../passport');
-const message = require('../controller/message');
+const msg = require('../controller/message');
 const log = require('debug')('chat-api:route:message');
 const { red, green, yellow } = require('chalk');
 
 module.exports = (router, catchAsyncErrors) => {
-  router.post('/message',
+  router.post('/message/send',
     hasAccess,
     catchAsyncErrors(async (req, res, next) => {
       // Handle success
@@ -15,7 +15,7 @@ module.exports = (router, catchAsyncErrors) => {
         return res.json({ error: { code: 401, message: "Message sending requires: sender, receiver and message" } });
       }    
 
-      const result = await user.send({sender , receiver, message});
+      const result = await msg.send({sender , receiver, message});
   
       if (result) {
         log(green("message sent"));
