@@ -18,4 +18,6 @@ So to launch the chat API just execute the following 3 command in the the projec
 
 If everything works well that should first install dependencies, launch a DB container and finally the api-chat.
 
+In case you want to test the API check [test/bdd/api-chat.postman_collection.json](test/bdd/api-chat.postman_collection.json) which is Postman collection.
+
 Enjoy the ride!
