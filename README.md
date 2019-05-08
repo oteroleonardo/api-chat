@@ -5,6 +5,7 @@ A simple demo of a chat API
 
 * Node.js >= 11.12.00
 * Docker
+* knex.js (this is optional to create db model and run migrations) npm install -g knes
 
 # First things first:
 This API chats depends on a PostgreSQL DB already running in your localhost. If that's not your case you can still use a provided docker container with PostgreSQL.
