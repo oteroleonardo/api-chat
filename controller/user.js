@@ -5,26 +5,29 @@ const { red, green, yellow } = require('chalk');
 
 const signUp = async (usr) => {
   const user = new User({ ...usr });
-  const savedUser = await user.save()
-    .catch(err => {
-      log(red('Error saving user', err));
-      const message = (err.code === '23505')?'Duplicated user':'Error saving user';
+  try {
+    const savedUser = await user.save()
+    if (typeof savedUser === 'undefined') {
+      // User not saved, send back no token
+      const message = 'Error user was not saved';
+      log(red(`Error in signUp: ${message}`));
       return {error: {code: 401, message}};
-    });
-
-  if (typeof savedUser === 'undefined') {
-    // User not saved, send back no token
-    const message = 'Error saving user';
+    } else {
+      // User saved, send back token with user info
+      const userStoredData = savedUser.attributes;
+  
+      delete userStoredData.password_digest;
+      const createdOn = new Date().getTime() + process.env.TOKEN_EXPIRATION*60000;
+      const token = jwt.sign({ ...userStoredData, createdOn }, process.env.SECRET_OR_KEY);
+      return {token};
+    }
+  } catch(err) {
+    const message = (err.code === '23505')? 'Duplicated user (23505)':'DB error saving user';
+    //log(red(`Error saving user: ${message}`));
     return {error: {code: 401, message}};
-  } else {
-    // User saved, send back token with user info
-    const userStoredData = savedUser.attributes;
+  };
+  log(red(savedUser.code, savedUser.err));
 
-    delete userStoredData.password_digest;
-    const createdOn = new Date().getTime() + process.env.TOKEN_EXPIRATION*60000;
-    const authToken = jwt.sign({ ...userStoredData, createdOn }, process.env.SECRET_OR_KEY);
-    return {authToken};
-  }
 
 }
 
