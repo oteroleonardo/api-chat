@@ -3,7 +3,7 @@ const log = require('debug')('chat-api:controller:message');
 const { red, green, yellow } = require('chalk');
 
 const send = async (message) => {
-  const message = new Message({ ...message });
+  const msg = new Message({ ...message });
   const savedMessage = await msg.save()
     .catch(err => {
       log(red('Error saving message:', err));
@@ -23,7 +23,7 @@ const send = async (message) => {
 };
 
 const receive = async (message) => {
-  const message = new Message({ ...message });
+  const msg = new Message({ ...message });
   const savedMessage = await msg.save()
     .catch(err => {
       log(red('Error saving message:', err));
