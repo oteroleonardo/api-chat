@@ -17,8 +17,11 @@ const signUp = async (usr) => {
       const userStoredData = savedUser.attributes;
   
       delete userStoredData.password_digest;
-      const createdOn = new Date().getTime() + process.env.TOKEN_EXPIRATION*60000;
-      const token = jwt.sign({ ...userStoredData, createdOn }, process.env.SECRET_OR_KEY);
+      const signOptions = {
+        //algorithm: 'HS512',
+        expiresIn:  process.env.TOKEN_EXPIRATION,
+      }
+      const token = jwt.sign({ ...userStoredData}, process.env.SECRET_OR_KEY, signOptions);
       return {token};
     }
   } catch(err) {
@@ -50,8 +53,11 @@ const signIn = async (email, password) => {
       log(green('User was signed in'));
       const userStoredData = authUser.attributes;
       delete userStoredData.password_digest;
-      const createdOn = new Date().getTime() + process.env.TOKEN_EXPIRATION*60000;
-      const authToken = jwt.sign({ ...userStoredData, createdOn }, process.env.SECRET_OR_KEY);
+      const signOptions = {
+        algorithm: 'HS512',
+        expiresIn:  `${process.env.TOKEN_EXPIRATION}s`, //token expiration indicated in seconds
+      }
+      const authToken = jwt.sign({ ...userStoredData}, process.env.SECRET_OR_KEY, signOptions);
       return authToken;
 
     }

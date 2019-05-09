@@ -6,7 +6,7 @@ const User = require('./model/user');
 const strategyJwt = passportJwt.Strategy;
 const extractJwt = passportJwt.ExtractJwt;
 
-log(white('Passport initialized.'));
+log(white(`Passport initialized with jwt token expiration of ${process.env.TOKEN_EXPIRATION} sec.`));
 
 // Passport initialization
 const opts = {
@@ -17,6 +17,14 @@ const opts = {
 const strategy = new strategyJwt(opts, (payload, next) => {
   const cb = async () => {
     log(green('Token payload: '), JSON.stringify(payload, null, 2));
+    
+    // const expirationDate = new Date(payload.exp * 1000);
+    // if(expirationDate < new Date()) {
+    //   log(red('Token expired for user id:', payload.id), red(err));
+    //   next(null, false, {error:{code:401, message: 'Token expired'}});
+    //   return;
+    // } 
+
     const user = await User.forge({ id: payload.id }).fetch()
       .catch(err => {
         log(red('Error validating user id:', payload.id), red(err));
