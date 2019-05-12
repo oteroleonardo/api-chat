@@ -15,7 +15,7 @@ So to launch the chat API just execute the following 3 command in the the projec
 > npm i
 > docker-compose up -d   (optional to start as daemon a PostgreSQL container)
 > npm run demo
-> docker-compose up -d   (optional to stop PostgreSQL container)
+> docker-compose stop    (optional to stop PostgreSQL container)
 ```
 
 If everything works well that should first install dependencies, launch a DB container and finally the api-chat.
