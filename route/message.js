@@ -17,13 +17,12 @@ module.exports = (router, catchAsyncErrors) => {
 
       const result = await msg.receive(req.user);
   
-      if (result) {
-        log(green("message sent"));
+      if (result && !result.error) {
+        log(result);
         return res.json(result);
       } else {
-        const msge = 'Message not sent try again later';
-        log(red(msge));
-        return res.json({ error: {code: 401, message: msge}});
+        log(red(result.error.message));
+        return res.json(result.error || {error: {code:501, message: 'Unknown internal error retrieving messages'}});
       }
     }),
     handleUnauthorized, // change this for a different behavior
@@ -32,21 +31,22 @@ module.exports = (router, catchAsyncErrors) => {
     hasAccess,
     catchAsyncErrors(async (req, res, next) => {
       // Handle success
-      const { sender, receiver, message} = req.body;
- 
-      if (!sender || !receiver || !message) {
-        return res.json({ error: { code: 401, message: "Message sending requires: sender, receiver and message" } });
+      const {receiver, relatedToMessage, message} = req.body;
+      const {username: sender} = req.user.attributes; 
+      console.log("sender: ", sender);
+      if ((!receiver && !relatedToMessage)  || !message) {
+        return res.json({ error: { code: 401, message: "Message sending requires: (receiver or relatedToMessage) and message" } });
       }    
 
-      const result = await msg.send({sender , receiver, message});
+      const result = await msg.send({sender , receiver, message, relatedToMessage});
   
-      if (result) {
+      if (result && !result.error) {
         log(green("message sent"));
         return res.json(result);
       } else {
-        const msge = 'Message not sent try again later';
-        log(red(msge));
-        return res.json({ error: {code: 401, message: msge}});
+        const msge = 'Error sending message';
+        log(red(result&&result.error?result.error.message : msge));
+        return res.json(result.error || { error: {code: 401, message: msge}});
       }
     }),
     handleUnauthorized, // change this for a different behavior
