@@ -22,15 +22,6 @@ exports.up = (knex, Promise) => {
 };
 
 exports.down = async (knex, Promise) => {
-  await knex.schema.hasTable('user').then(exists => {
-    if (exists) {
-      return knex.schema
-        .dropTable('user')
-        .catch(e => console.log(e.message));
-    } else {
-      console.log("Table user does not exist so there is nothing to do");
-    }
-  });
   await knex.schema.hasTable('message').then(exists => {
     if (exists) {
       return knex.schema
@@ -38,6 +29,16 @@ exports.down = async (knex, Promise) => {
         .catch(e => console.log(e.message));
     } else {
       console.log("Table message does not exist so there is nothing to do");
+    }
+  });
+
+  await knex.schema.hasTable('user').then(exists => {
+    if (exists) {
+      return knex.schema
+        .dropTable('user')
+        .catch(e => console.log(e.message));
+    } else {
+      console.log("Table user does not exist so there is nothing to do");
     }
   });
 

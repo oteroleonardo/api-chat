@@ -32,8 +32,38 @@ const signUp = async (usr) => {
   };
   log(red(savedUser.code, savedUser.err));
 
+};
 
-}
+const update = async (usr) => {
+  const user = new User({ ...usr });
+  try {
+    const savedUser = await user.save()
+    if (typeof savedUser === 'undefined') {
+      // User not saved, send back no token
+      const message = 'Error user was not updated';
+      log(red(`Error in user update: ${message}`));
+      return { error: { code: 401, message } };
+    } else {
+      // User saved, send back token with user info
+      const userStoredData = savedUser.attributes;
+
+      delete userStoredData.password_digest;
+      const signOptions = {
+        algorithm: 'HS512',
+        expiresIn: `${process.env.TOKEN_EXPIRATION}s`, //token expiration indicated in seconds
+      }
+      log()
+      const token = jwt.sign({ ...userStoredData }, process.env.SECRET_OR_KEY, signOptions);
+      return { token };
+    }
+  } catch (err) {
+    const message = (err.code === '23505') ? 'Duplicated user (23505)' : 'DB error saving user';
+    //log(red(`Error saving user: ${message}`));
+    return { error: { code: 401, message } };
+  };
+  log(red(savedUser.code, savedUser.err));
+
+};
 
 const signIn = async (email, password) => {
   log(green('Calling signIn with email: ', email));
@@ -118,5 +148,6 @@ module.exports = {
   signUp,
   signIn,
   refresh,
-  contacts
+  contacts,
+  update,
 }
