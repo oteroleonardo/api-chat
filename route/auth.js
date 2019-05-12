@@ -1,5 +1,5 @@
 
-const { User } = require('../passport');
+const { hasAccess, handleUnauthorized } = require('../passport');
 const user = require('../controller/user');
 const log = require('debug')('chat-api:route:auth:user');
 const { red, green, yellow } = require('chalk');
@@ -11,14 +11,11 @@ module.exports = (router, catchAsyncErrors) => {
     if (!email || !password) {
       return res.json({ error: { code: 401, message: "Login requires email and password" } });
     }
-
-    const token = await user.signIn(email, password);
+    const { users, token } = await user.signIn(email, password);
 
     if (token) {
-      log(green("User successfully logged in"));
-      return res.json({ users: ['pepital', 'gertrudis', 'jaime'], token });
+      return res.json({ users, token });
     } else {
-      log(yellow("User was not logged in"));
       return res.json({ loggedIn: false });
     }
 
@@ -42,4 +39,23 @@ module.exports = (router, catchAsyncErrors) => {
       return res.json(signedUp);
     }
   }));
+
+  router.get('/auth/refresh',
+    hasAccess,
+    catchAsyncErrors(async (req, res) => {
+      const { email, id, username, status } = req.tokenPayload;
+      const token = await user.refresh({ email, id, username, status });
+
+      if (token) {
+        log(green("User token successfully refreshed"));
+        return res.json({ token });
+      } else {
+        log(yellow("User was not logged in"));
+        return res.json({ loggedIn: false });
+      }
+
+    }),
+    handleUnauthorized, // change this for a different behavior
+  );
+
 };

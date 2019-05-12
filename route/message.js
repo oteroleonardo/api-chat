@@ -1,5 +1,5 @@
 
-const { hasAccess, handleUnauthorized, passport } = require('../passport');
+const { hasAccess, handleUnauthorized} = require('../passport');
 const msg = require('../controller/message');
 const log = require('debug')('chat-api:route:message');
 const { red, green, yellow } = require('chalk');
@@ -9,7 +9,8 @@ module.exports = (router, catchAsyncErrors) => {
     hasAccess,
     catchAsyncErrors(async (req, res, next) => {
       // Handle success
-      log( '----------', green(JSON.stringify(req.user)), '----------');
+      log( '---------- req.user: ', green(JSON.stringify(req.user, null,2)), '----------');
+      log( '---------- tokenPayload: ', green(JSON.stringify(req.tokenPayload, null,2)), '----------');
       // if (!receiver) {
       //   return res.json({ error: { code: 401, message: "Message sending requires: sender, receiver and message" } });
       // }    

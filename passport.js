@@ -12,9 +12,11 @@ log(white(`Passport initialized with jwt token expiration of ${process.env.TOKEN
 const opts = {
   jwtFromRequest: extractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.SECRET_OR_KEY,
+  passReqToCallback: true,
 };
 
-const strategy = new strategyJwt(opts, (payload, next) => {
+const strategy = new strategyJwt(opts, (req, payload, next) => {
+  req.tokenPayload = payload;
   const cb = async () => {
     log(green('Token payload: '), JSON.stringify(payload, null, 2));
     
