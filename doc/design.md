@@ -1,21 +1,21 @@
-* Decisiones de diseño
+# Decisiones de diseño
 
-** La solución cuenta con 3 capas:
+## La solución cuenta con 3 capas:
 
 - Routeo: Ver route/index.js
 - Controladores: Ver controller/[user.js/message.js]
 - Persistencia: Ver model/[user.js/message.js]
 
-** También se cuenta con funcionalidades de migration/seeding que permiten reiniciar la base y popularla con datos de pruebas
+## También se cuenta con funcionalidades de migration/seeding que permiten reiniciar la base y popularla con datos de pruebas
 
 Ver migrations/*.js y seeds/*.js
 
-** La solución emplea Docker para facilitar el uso de PostgreSQL
+## La solución emplea Docker para facilitar el uso de PostgreSQL
 
 Ver docker-compose.yml y Dockerfile
 
 
-** Librarias utilizadas
+## Librarias utilizadas
 
 - bcrypt: Permite cifrar el token JWT
 - bookshelf: ORM que facilita la persistencia
