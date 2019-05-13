@@ -2,7 +2,7 @@
 
 ## La solución cuenta con 3 capas:
 
-- Routeo: Ver route/index.js
+- Ruteo: Ver route/index.js
 - Controladores: Ver controller/[user.js/message.js]
 - Persistencia: Ver model/[user.js/message.js]
 
