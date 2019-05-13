@@ -24,10 +24,10 @@ Ver docker-compose.yml y Dockerfile
 - cookie-parser: Permite recuperar propiedades almacenadas como cookies en el browser
 - debug:  Permite controlar que secciónes de la aplicación pueden generar log
 - dotenv: Permite manejar variables de ambiente desde archivos .env 
-- express: Permite implementar un servidor http/https con multiples rutas y soporta multiples middlewares que permiten agregar comportamiento transversal.
-- http-errors: "~1.6.2",
+- express: Permite implementar un servidor http/https con multiples rutas y soporta multiples middlewares que permiten agregar comportamiento transversal
+- http-errors: Manejador de errores empleado por Express.js permite capturar errores no manejadas en campas previas
 - jade: Default HTML template manager usado por Express.js
-- jsonwebtoken: Simplifica la creación de JWT tokens.
+- jsonwebtoken: Simplifica la creación de JWT tokens
 - knex: Simplifica el acceso a DBs a la vez que permite utilizar queries SQL
 - morgan: Middleware Logger utilizados para loguear las request http
 - nodemon: Utilizado para recargar la aplicación luego de cada cambio en el código fuente - acelerando el proceso de desarrollo
