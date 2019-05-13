@@ -22,4 +22,6 @@ If everything works well that should first install dependencies, launch a DB con
 
 In case you want to test the API check [test/bdd/api-chat.postman_collection.json](test/bdd/api-chat.postman_collection.json) which is Postman collection.
 
+Solution design consideration (just spanish sorry ;) ) [doc/design.md](doc/design.md)
+
 Enjoy the ride!
