@@ -33,20 +33,22 @@ module.exports = (router, catchAsyncErrors) => {
       // Handle success
       const {receiver, relatedToMessage, message} = req.body;
       const {username: sender} = req.user.attributes; 
-      console.log("sender: ", sender);
+
+      log(green(`Sending message from ${sender} to [${receiver.join(', ')}]`));
+
       if ((!receiver && !relatedToMessage)  || !message) {
         return res.json({ error: { code: 401, message: "Message sending requires: (receiver or relatedToMessage) and message" } });
       }    
 
       const result = await msg.send({sender , receiver, message, relatedToMessage});
-  
+      console.log('result: ', result);
       if (result && !result.error) {
         log(green("message sent"));
         return res.json(result);
       } else {
-        const msge = 'Error sending message';
-        log(red(result&&result.error?result.error.message : msge));
-        return res.json(result.error || { error: {code: 401, message: msge}});
+        const msge = result&result.error?result.error.message : 'Error sending message';
+        log(red(msge));
+        return res.json({ error: {code: 401, message: msge}});
       }
     }),
     handleUnauthorized, // change this for a different behavior

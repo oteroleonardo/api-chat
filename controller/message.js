@@ -16,33 +16,41 @@ const send = async (message) => {
       if(relatedMsg && !relatedMsg.error){
         const { sender: originalSender } = relatedMsg.attributes;
         log(green(`Successfuly retrieved original sender: ${originalSender} for relatedToMessage: ${messg.relatedToMessage}`));
-        messg.receiver =  originalSender; 
+        messg.receiver = [originalSender]; 
       } else {
         return relatedMsg && relatedMsg.error? relatedMsg.error: { error: { code: 401, message: 'Wrong relatedToMessage' } };
       }
   }
-  console.log("------------ Step 1");
-  const msg = new Message(messg);
-  const savedMessage = await msg.save()
-    .catch(err => {
-      log(red(`Error code: (${err.code}) saving message: `, err.message));
-      const msge = err.code == 23503? 'Wrong relatedToMessage o receiver' : 'Error saving message';
-      return { error: { code: 401, message: msge } };
-    });
-    console.log("------------ Step 2");
+  const calls = messg.receiver.map(async (receiver) => {
+    const msgToPersist = {...messg};
+    msgToPersist.receiver = receiver;
+    const msg = new Message(msgToPersist);
+    const savedMessage = await msg.save()
+      .catch(err => {
+        log(red(`Error saving message to receiver: (${receiver}) result code: (${err.code}) - cause: `, err.message));
+        const msge = err.code == 23503? 'Wrong relatedToMessage o receiver' : 'Error saving message';
+        return { error: { code: 401, message: msge } };
+      });  
+    if (typeof savedMessage === 'undefined' || (savedMessage &&savedMessage.error)) {
+      // Message not saved, sending back error
+      const message = savedMessage&& savedMessage.error? savedMessage.error.message : `Error saving message to receiver: ${receiver}`;
+      const code = savedMessage&& savedMessage.error? savedMessage.error.code : 401;
+      return Promise.reject({ error: { code, message} });
+    } else {
+      // Message saved, sending back Ok response
+      return Promise.resolve({ status: 'Ok', message: `message sent to receiver ${receiver}` });
+    }   
+  });
 
-  if (typeof savedMessage === 'undefined' || savedMessage.error) {
-    console.log("------------ Step 3");
-
-    // Message not saved, send back error
-    const message = savedMessage&& savedMessage.error? savedMessage.error.message : 'Error saving message';
-    const code = savedMessage&& savedMessage.error? savedMessage.error.code : 401;
-    return { error: { code, message} };
-  } else {
-    console.log("------------ Step 4");
-    // Message saved, send back Ok response
-    return { status: 'Ok', message: 'message was sent' };
-  }
+  return await Promise.all(calls).then( (results) => {
+    //log(green(`Result of saving message sent by ${messg.sender}: `, JSON.stringify(results, null, 2)));
+    return {status: 'Ok', results};
+  } )
+  .catch(reason => { 
+    log(green(JSON.stringify(reason, null, 2)));
+    return {error: reason};
+  });
+  
 };
 
 const receive = async ({username: receiver}) => {
