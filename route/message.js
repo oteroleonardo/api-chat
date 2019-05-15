@@ -34,7 +34,7 @@ module.exports = (router, catchAsyncErrors) => {
       const {receiver, relatedToMessage, message} = req.body;
       const {username: sender} = req.user.attributes; 
 
-      log(green(`Sending message from ${sender} to [${receiver.join(', ')}]`));
+      log(green(`Sending message from ${sender} to [${receiver}]`));
 
       if ((!receiver && !relatedToMessage)  || !message) {
         return res.json({ error: { code: 401, message: "Message sending requires: (receiver or relatedToMessage) and message" } });

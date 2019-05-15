@@ -15,34 +15,34 @@ services:
     ports:
       # Expose ports [HOST:CONTAINER}
       - "${DB_PORT}:${DB_PORT}"
-    volumes:
+#    volumes:
       # Mounts the database files on the host to /tmp.postgres-data
-      - /tmp/postgres-data:/var/lib/postgresql/data  
-  # chat-api-core:
-  #   container_name: chat-api-core
-  #   build:
-  #     context: ./
-  #   networks:
-  #     - chat-nets
-  #   depends_on:
-  #     - chat-db
-  #   restart: on-failure
-  #   ports:
-  #     # Expose ports [HOST:CONTAINER}
-  #     - "${PORT}:${PUBLIC_PORT}"
-  #   volumes:
-  #     # Mounts the project directory on the host to /code inside the container,
-  #     # allowing you to modify the code without having to rebuild the image.
-  #     - ./:/code
-  #     # Just specify a path and let the Engine create a volume.
-  #     # Data present in the base image at the specified mount point will be copied
-  #     # over to the new volume upon volume initialization.
-  #     # node_modules from this new volume will be used and not from your local dev env.
-  #     - /code/node_modules/
-  #   env_file:
-  #     # Set environment variables from this file
-  #     - .env
-  #   links:
-  #     - chat-db
+      #- /tmp/postgres-data:/var/lib/postgresql/data  
+  chat-api-core:
+    container_name: chat-api-core
+    build:
+      context: ./
+    networks:
+      - chat-nets
+    depends_on:
+      - chat-db
+    restart: on-failure
+    ports:
+      # Expose ports [HOST:CONTAINER}
+      - "${PORT}:${PUBLIC_PORT}"
+    volumes:
+      # Mounts the project directory on the host to /code inside the container,
+      # allowing you to modify the code without having to rebuild the image.
+      - ./:/code
+      # Just specify a path and let the Engine create a volume.
+      # Data present in the base image at the specified mount point will be copied
+      # over to the new volume upon volume initialization.
+      # node_modules from this new volume will be used and not from your local dev env.
+      - /code/node_modules/
+    env_file:
+      # Set environment variables from this file
+      - .env
+    links:
+      - chat-db
 networks:
   chat-nets:

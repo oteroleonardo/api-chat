@@ -11,7 +11,7 @@ const catchAsyncErrors = (fn) => {
     fn(req, res, next)
       .catch(err => {
         const message = err?err.message : 'Unknown internal error';
-        log(red('Error calling controller: ', err));
+        log(red('Error calling controller: ', red(err.stack)));
         return { error: { code: 501, message } };
       });
 
