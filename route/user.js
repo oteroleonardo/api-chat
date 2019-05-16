@@ -31,6 +31,7 @@ module.exports = (router, catchAsyncErrors) => {
       if(password) {
         storedUsr.password = password;
       }
+      
       const result  = await user.update(storedUsr);
       if (result && !result.error) {
         log(green("User state changed"));

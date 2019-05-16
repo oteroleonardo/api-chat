@@ -35,9 +35,11 @@ const signUp = async (usr) => {
 };
 
 const update = async (usr) => {
-  const user = new User({ ...usr });
+  log(`usr: ${JSON.stringify(usr)}`)
+//  const { id, username, status, password, email } = usr; 
+  const user = new User({...usr});
   try {
-    const savedUser = await user.save()
+    const savedUser = await User.forge({...usr}).save();//null, {method: 'update'});
     if (typeof savedUser === 'undefined') {
       // User not saved, send back no token
       const message = 'Error user was not updated';
@@ -57,11 +59,11 @@ const update = async (usr) => {
       return { token };
     }
   } catch (err) {
+    log(err);
     const message = (err.code === '23505') ? 'Duplicated user (23505)' : 'DB error saving user';
     //log(red(`Error saving user: ${message}`));
     return { error: { code: 401, message } };
   };
-  log(red(savedUser.code, savedUser.err));
 
 };
 
