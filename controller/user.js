@@ -56,7 +56,7 @@ const update = async (usr) => {
       }
       log()
       const token = jwt.sign({ ...userStoredData }, process.env.SECRET_OR_KEY, signOptions);
-      return { token };
+      return { result: true}; //, token };
     }
   } catch (err) {
     log(err);
