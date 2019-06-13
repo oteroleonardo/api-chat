@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const log = require('debug')('chat-api:app');
 const {red, green, yellow} = require('chalk'); 
@@ -8,6 +9,22 @@ const {passport} = require('./passport');
 const router = require('./route');
 
 const app = express();
+
+// CORS configuration
+const whitelist = [
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'http://localhost:3001',
+  'https://localhost:3001',
+];
+const corsOptions = {
+  origin: whitelist,
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+  // Use cors
+app.use(cors(corsOptions));
 
 app.use(passport.initialize());
 app.use(logger('dev'));

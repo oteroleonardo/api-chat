@@ -1,5 +1,5 @@
 {
-  "name": "chat-api",
+  "name": "api-chat",
   "version": "0.1.0",
   "private": true,
   "author": "Leonardo Otero<oteroleonardo@gmail.com",
@@ -8,7 +8,8 @@
     "watched": "DEBUG=chat-api* nodemon --signal SIGINT ./bin/www",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "demo": "knex migrate:rollback --all && knex migrate:latest && knex seed:run && npm run watched",
+    "reset": "knex migrate:rollback all",
+    "demo": "knex migrate:rollback all && knex migrate:latest && knex seed:run && npm run watched",
     "start-docker": "docker-compose up"
   },
   "dependencies": {
@@ -17,6 +18,7 @@
     "bookshelf-secure-password": "^3.1.0",
     "chalk": "^2.4.2",
     "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
     "debug": "^2.6.9",
     "dotenv": "^7.0.0",
     "express": "~4.16.0",
