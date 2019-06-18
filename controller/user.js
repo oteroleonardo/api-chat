@@ -84,6 +84,7 @@ const signIn = async (email, password) => {
 
     if (authUser) {
       log(green('User ${email} successfully signed in'));
+      await User.forge({...user.attributes, status: 'connected'}).save();
       const userStoredData = authUser.attributes;
       delete userStoredData.password_digest;
       const signOptions = {
@@ -142,7 +143,9 @@ const contacts = async () => {
   } else {
     log(green('Contacts not found in DB'));
   }
-  return {users: users.map(u => u.attributes.username)};
+  return {users: users.map(u => {
+    return u.attributes
+  })};
 
 };
 
