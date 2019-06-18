@@ -144,6 +144,8 @@ const contacts = async () => {
     log(green('Contacts not found in DB'));
   }
   return {users: users.map(u => {
+    delete u.password_digest;
+    
     return u.attributes
   })};
 
