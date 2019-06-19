@@ -1,3 +1,5 @@
+const knex  =  require('../knexfile');
+const db = require('knex')(knex.development);
 const Message = require('../model/message');
 const log = require('debug')('chat-api:controller:message');
 const { red, green, yellow } = require('chalk');
@@ -6,6 +8,11 @@ const send = async (message) => {
   let messg = { ...message };
 
   if(messg.relatedToMessage){
+    db('investments')
+    .where('id', investmentID)
+    .select({ column: columnName })
+    .then(row => row[0].column);
+
     const relatedMsg = (await Message.forge({id: messg.relatedToMessage}).fetch()
       .catch(err => {
         log(red(`Error code: (${err.code}) retrieving related message sender: `, err.message));
@@ -78,12 +85,27 @@ const update = async (msg) => {
 
 const receive = async ({username:receiver}) => {
   log(green('Starting receive with receiver: ', receiver));
-  const messages = await Message.where({receiver, readed: false}).fetchAll()
-    .catch(err => {
-      log(red(`Error retrieving received messages for ${username} cause: `, err.stack));
-      const msge = err.message || 'Error retrieving messages';
-      return { error: { code: 401, message: msge } };
-    });
+  let result = await db.raw(
+    `
+    SELECT "message".*, "user"."id" AS "userId"
+    FROM "message"
+    INNER JOIN  "user"
+    ON "user"."username" = "message"."sender" 
+    WHERE "receiver" = ? AND "readed" = false;
+  `, receiver,
+  )
+    .catch(e => Promise.resolve(err501(e.message || 'Unknown error in loanLimits')));
+
+  const {rows:messages} = result;
+
+
+
+  // messages = await Message.where({receiver, readed: false}).fetchAll()
+  //   .catch(err => {
+  //     log(red(`Error retrieving received messages for ${username} cause: `, err.stack));
+  //     const msge = err.message || 'Error retrieving messages';
+  //     return { error: { code: 401, message: msge } };
+  //   });
 
   if (typeof messages === 'undefined' || messages.length === 0) {
     // Message not saved, send back error
