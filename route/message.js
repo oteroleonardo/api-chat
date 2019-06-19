@@ -9,13 +9,13 @@ module.exports = (router, catchAsyncErrors) => {
     hasAccess,
     catchAsyncErrors(async (req, res, next) => {
       // Handle success
-      log( '---------- req.user: ', green(JSON.stringify(req.user, null,2)), '----------');
+      log( '---------- req.user: ', green(JSON.stringify(req.user.attributes, null,2)), '----------');
       log( '---------- tokenPayload: ', green(JSON.stringify(req.tokenPayload, null,2)), '----------');
       // if (!receiver) {
       //   return res.json({ error: { code: 401, message: "Message sending requires: sender, receiver and message" } });
       // }    
 
-      const result = await msg.receive(req.user);
+      const result = await msg.receive(req.user.attributes);
   
       if (result && !result.error) {
         log(result);
@@ -26,7 +26,8 @@ module.exports = (router, catchAsyncErrors) => {
       }
     }),
     handleUnauthorized, // change this for a different behavior
-  );  
+  );
+
   router.post('/message',
     hasAccess,
     catchAsyncErrors(async (req, res, next) => {
@@ -53,4 +54,31 @@ module.exports = (router, catchAsyncErrors) => {
     }),
     handleUnauthorized, // change this for a different behavior
   );
+  router.patch('/message',
+    hasAccess,
+    catchAsyncErrors(async (req, res, next) => {
+      // Handle success
+      const {id, readed, message, relatedToMessage, receiver} = req.body;
+      const {username: sender} = req.user.attributes; 
+
+      log(green(`Updating message ${id} with readed: ${readed} from ${sender} to [${receiver}]`));
+
+      if ((!id && typeof readed === 'undefined') && (!message && !relatedToMessage)){
+        return res.json({ error: { code: 401, message: "Message update requires: (id and readed or message and relatedToMessage)" } });
+      }    
+
+      const result = await msg.update({id, readed, sender ,  message, relatedToMessage, receiver});
+      console.log('patch result: ', result);
+      if (result && !result.error) {
+        log(green("message sent"));
+        return res.json(result);
+      } else {
+        const msge = result&result.error?result.error.message : 'Error updating message';
+        log(red(msge));
+        return res.json({ error: {code: 401, message: msge}});
+      }
+    }),
+    handleUnauthorized, // change this for a different behavior
+  );
+
 };

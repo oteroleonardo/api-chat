@@ -53,10 +53,34 @@ const send = async (message) => {
   
 };
 
-const receive = async ({username: receiver}) => {
-  const messages = await Message.forge({ receiver}).fetchAll()
+const update = async (msg) => {
+  const {id, readed, relatedToMessage, message, sender, receiver} = msg;
+  //TODO add more update options
+  const updated = await Message.forge().save({id, readed, relatedToMessage, message, sender, receiver}, {patch: true})
     .catch(err => {
-      log(red(`Error retrieving received messages for ${receiver} cause: `, err.stack));
+      log(red(`Error code: (${err.code}) updating message sender: `, err.message));
+      const msge =`Error updating message: ` + id;
+      return { error: { code: 401, message: msge } };
+    });
+
+  if(updated && !updated.error){
+    const updatedMessage = updated.attributes;
+    log(green(`Successfuly updated message: ${id} result:` , JSON.stringify(updatedMessage, null, 2)));
+    return Promise.resolve({ status: 'Ok', message: `message successfuly updated` });
+  } else {
+    return Promise.resolve(updated && updated.error
+      ? updated.error : 
+      { error: { code: 401, message: 'Error Updating message' } }
+    );
+  }
+  
+};
+
+const receive = async ({username:receiver}) => {
+  log(green('Starting receive with receiver: ', receiver));
+  const messages = await Message.where({receiver, readed: false}).fetchAll()
+    .catch(err => {
+      log(red(`Error retrieving received messages for ${username} cause: `, err.stack));
       const msge = err.message || 'Error retrieving messages';
       return { error: { code: 401, message: msge } };
     });
@@ -75,4 +99,5 @@ const receive = async ({username: receiver}) => {
 module.exports = {
   send,
   receive,
+  update
 }
